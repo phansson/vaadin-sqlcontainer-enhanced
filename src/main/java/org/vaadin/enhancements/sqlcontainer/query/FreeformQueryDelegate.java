@@ -31,9 +31,7 @@ public interface FreeformQueryDelegate extends Serializable {
      *
      * @param offset
      *            the first record (row) to fetch.
-     * @param pagelength
-     *            the number of records (rows) to fetch. 0 means all records
-     *            starting from offset.
+     * @param limit
      * @deprecated As of 6.7. Implement {@link FreeformStatementDelegate}
      *             instead of {@link FreeformQueryDelegate}
      */
@@ -47,7 +45,6 @@ public interface FreeformQueryDelegate extends Serializable {
      * the QueryDelegate.
      *
      * @return row count
-     * @throws SQLException
      * @deprecated As of 6.7. Implement {@link FreeformStatementDelegate}
      *             instead of {@link FreeformQueryDelegate}
      */

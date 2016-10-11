@@ -72,7 +72,7 @@ final public class ColumnProperty implements Property {
      * @param type
      *
      * @deprecated As of 7.0. Use
-     *             {@link #ColumnProperty(String, boolean, boolean, boolean, boolean, Object, Class)
+     *             {@link #ColumnProperty(String, boolean, boolean, boolean, boolean, Object, Class)}
      *             instead
      */
     @Deprecated
