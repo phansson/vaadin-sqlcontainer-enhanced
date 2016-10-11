@@ -46,7 +46,8 @@ public class DerbySQLGenerator extends DefaultSQLGenerator {
      * @param offset Value for offset.
      * @param pagelength Value for pagelength.
      * @return StringBuffer with LIMIT and OFFSET clause added.
-     */
+     */   
+    @Override
     protected StringBuffer generateLimits(StringBuffer sb, int offset, int pagelength) {
         sb.append(" OFFSET ").append(offset).append(" ROWS").append(" FETCH NEXT ").append(pagelength).append(" ROWS ONLY");
         return sb;
