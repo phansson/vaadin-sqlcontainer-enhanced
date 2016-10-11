@@ -113,25 +113,45 @@ public class SQLContainer implements Container, Container.Filterable,
     /** Cache flush notification system enabled. Disabled by default. */
     private boolean notificationsEnabled;
 
+    /** Conversion of custom types, i.e. types outside of the JDBC standard */
+    private final Map<Class<?>, CustomTypeConverter> customTypeMap;
+
     /**
      * Prevent instantiation without a QueryDelegate.
      */
     @SuppressWarnings("unused")
     private SQLContainer() {
+        customTypeMap = null;
     }
 
     /**
      * Creates and initializes SQLContainer using the given QueryDelegate
      *
      * @param delegate
-     *            QueryDelegate implementation
+     *            QueryDelegate implementation (must not be {@code null})
      * @throws SQLException
      */
     public SQLContainer(QueryDelegate delegate) throws SQLException {
+        this(delegate, null);
+    }
+    
+    /**
+     * Creates and initializes SQLContainer using the given QueryDelegate
+     * and map of classes to do custom conversion on. You rarely need this form
+     * of the constructor unless you need to perform conversion on some vendor
+     * specific data types, e.g. Oracle's proprietary timestamp values.
+     *
+     * @param delegate
+     *            QueryDelegate implementation (must not be {@code null})
+     * @param customTypeConverters map of converters
+     * @throws SQLException
+     */
+    public SQLContainer(QueryDelegate delegate, Map<Class<?>, CustomTypeConverter> customTypeConverters) throws SQLException {
         if (delegate == null) {
             throw new IllegalArgumentException(
                     "QueryDelegate must not be null.");
         }
+        this.customTypeMap = customTypeConverters;
         queryDelegate = delegate;
         getPropertyIds();
         cachedItems.setCacheLimit(CACHE_RATIO * getPageLength() + cacheOverlap);
@@ -347,6 +367,9 @@ public class SQLContainer implements Container, Container.Filterable,
                     /* Generate itemId for the row based on primary key(s) */
                     Object[] itemId = new Object[pKeys.size()];
                     for (int i = 0; i < pKeys.size(); i++) {
+                        // We deliberately do not go through the custom converter
+                        // here. Primary keys are not expected to be of a type that
+                        // needs custom conversion.
                         itemId[i] = rs.getObject(pKeys.get(i));
                     }
                     id = new RowId(itemId);
@@ -1217,15 +1240,9 @@ public class SQLContainer implements Container, Container.Filterable,
                 }
                 /* Try to determine the column's JDBC class by all means. */
                 if (resultExists && rs.getObject(i) != null) {
-                    type = rs.getObject(i).getClass();
+                    type = customConvert(rs.getObject(i), rs).getClass();
                 } else {
-                    try {
-                        type = Class.forName(rsmd.getColumnClassName(i));
-                    } catch (Exception e) {
-                        getLogger().log(Level.WARNING, "Class not found", e);
-                        /* On failure revert to Object and hope for the best. */
-                        type = Object.class;
-                    }
+                    type = getCustomConvertedClass(rsmd.getColumnClassName(i));
                 }
                 /*
                  * Determine read only and nullability status of the column. A
@@ -1318,6 +1335,9 @@ public class SQLContainer implements Container, Container.Filterable,
                 /* Generate row itemId based on primary key(s) */
                 Object[] itemId = new Object[pKeys.size()];
                 for (int i = 0; i < pKeys.size(); i++) {
+                    // We deliberately do not go through the custom converter
+                    // here. Primary keys are not expected to be of a type that
+                    // needs custom conversion.
                     itemId[i] = rs.getObject(pKeys.get(i));
                 }
                 RowId id = null;
@@ -1334,7 +1354,7 @@ public class SQLContainer implements Container, Container.Filterable,
                             continue;
                         }
                         String colName = rsmd.getColumnLabel(i);
-                        Object value = rs.getObject(i);
+                        Object value = customConvert(rs.getObject(i), rs);
                         Class<?> type = value != null ? value.getClass()
                                 : Object.class;
                         if (value == null) {
@@ -1872,4 +1892,36 @@ public class SQLContainer implements Container, Container.Filterable,
         return Logger.getLogger(SQLContainer.class.getName());
     }
 
+    /**
+     * Performs a user-defined custom conversion on the JDBC object value
+     * as returned from ResultSet#getObject(). 
+     */
+    private Object customConvert(Object from, ResultSet rs) throws SQLException {
+        if (customTypeMap == null || from == null) {
+            return from;
+        } else {
+            CustomTypeConverter cConverter = customTypeMap.get(from.getClass());
+            if (cConverter != null) {
+                return cConverter.convertObject(from, rs);
+            }
+        }
+        return from;
+    }
+    
+    private Class<?> getCustomConvertedClass(String fromClassName) {
+        if (customTypeMap != null && fromClassName != null) {
+            for (Map.Entry<Class<?>, CustomTypeConverter> c : customTypeMap.entrySet()) {
+                if (c.getKey().getName().equals(fromClassName)) {
+                    return c.getValue().getType();
+                }
+            }
+        }
+        try {
+            return Class.forName(fromClassName);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Class not found", e);
+            /* On failure revert to Object and hope for the best. */
+            return Object.class;
+        }
+    }
 }
