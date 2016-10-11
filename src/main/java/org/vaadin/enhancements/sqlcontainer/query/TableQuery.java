@@ -308,7 +308,10 @@ public class TableQuery extends AbstractTransactionalQuery
                     "This may or may not work.", jdbcDriverClassName);
             return new DefaultSQLGenerator();
         }
-        if (db == JDBCDatabase.MARIADB || db == JDBCDatabase.MYSQL || db == JDBCDatabase.POSTGRESQL) {
+        if (db == JDBCDatabase.MARIADB || 
+                db == JDBCDatabase.MYSQL || 
+                db == JDBCDatabase.POSTGRESQL ||
+                db == JDBCDatabase.HSQLDB) {
             return new DefaultSQLGenerator();
         }
         if (db == JDBCDatabase.ORACLE) {
@@ -969,7 +972,7 @@ public class TableQuery extends AbstractTransactionalQuery
 
     /**
      * @deprecated As of 7.0, replaced by
-     *             {@link #addRowIdChangeListener(com.vaadin.data.util.sqlcontainer.query.QueryDelegate.RowIdChangeListener)}
+     *             {@link #addRowIdChangeListener(QueryDelegate.RowIdChangeListener)}
      **/
     @Override
     @Deprecated
@@ -989,7 +992,7 @@ public class TableQuery extends AbstractTransactionalQuery
 
     /**
      * @deprecated As of 7.0, replaced by
-     *             {@link #removeRowIdChangeListener(com.vaadin.data.util.sqlcontainer.query.QueryDelegate.RowIdChangeListener)}
+     *             {@link #removeRowIdChangeListener(QueryDelegate.RowIdChangeListener)}
      **/
     @Override
     @Deprecated

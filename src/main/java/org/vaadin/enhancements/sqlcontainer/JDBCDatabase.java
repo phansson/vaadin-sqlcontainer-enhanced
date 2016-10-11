@@ -1,5 +1,4 @@
 /*
- *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
@@ -26,12 +25,34 @@ public enum JDBCDatabase {
     // class name then this method will fail. An example of this is yet to
     // be seen.
     
-    MYSQL("MySQL", "com.mysql.jdbc.Driver"),
-    ORACLE("Oracle Database", "oracle.jdbc.driver.OracleDriver"),
-    MARIADB("MariaDB", "org.mariadb.jdbc.Driver"),
-    MSSQL("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
-    POSTGRESQL("PostgreSQL", "org.postgresql.Driver" ),
-    DERBY("Apache Derby", "org.apache.derby.jdbc.ClientDriver");
+    /**
+     * MySQL
+     */
+    MYSQL("MySQL", JDBCDriverClassNames.MYSQL),
+    /**
+     * Oracle
+     */
+    ORACLE("Oracle Database", JDBCDriverClassNames.ORACLE),
+    /**
+     * MariaDB
+     */
+    MARIADB("MariaDB", JDBCDriverClassNames.MARIADB),
+    /**
+     * Microsoft SQL Server
+     */
+    MSSQL("Microsoft SQL Server", JDBCDriverClassNames.MSSQL),
+    /**
+     * PostgresSQL
+     */
+    POSTGRESQL("PostgreSQL", JDBCDriverClassNames.POSTGRESQL ),
+    /**
+     * Apache Derby
+     */
+    DERBY("Apache Derby", JDBCDriverClassNames.DERBY),
+    /**
+     * HyperSQL 
+     */
+    HSQLDB("HyperSQL Database", JDBCDriverClassNames.HSQLDB);
 
     private final String displayName;
     private final String driverClassName;
