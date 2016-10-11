@@ -36,13 +36,16 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import org.vaadin.enhancements.sqlcontainer.ColumnProperty;
+import org.vaadin.enhancements.sqlcontainer.JDBCDatabase;
 import org.vaadin.enhancements.sqlcontainer.OptimisticLockException;
 import org.vaadin.enhancements.sqlcontainer.RowId;
 import org.vaadin.enhancements.sqlcontainer.RowItem;
 import org.vaadin.enhancements.sqlcontainer.SQLUtil;
 import org.vaadin.enhancements.sqlcontainer.TemporaryRowId;
 import org.vaadin.enhancements.sqlcontainer.query.generator.DefaultSQLGenerator;
+import org.vaadin.enhancements.sqlcontainer.query.generator.DerbySQLGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.MSSQLGenerator;
+import org.vaadin.enhancements.sqlcontainer.query.generator.OracleGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.SQLGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.StatementHelper;
 
@@ -50,6 +53,8 @@ import org.vaadin.enhancements.sqlcontainer.query.generator.StatementHelper;
 public class TableQuery extends AbstractTransactionalQuery
         implements QueryDelegate, QueryDelegate.RowIdChangeNotifier {
 
+    private static final Logger LOGGER = Logger.getLogger(TableQuery.class.getName());
+    
     /**
      * Table name (without catalog or schema information).
      */
@@ -106,6 +111,35 @@ public class TableQuery extends AbstractTransactionalQuery
     }
 
     /**
+     * Creates a new TableQuery using the given connection pool, JDBC driver
+     * class name and table name to fetch the data from. All parameters must 
+     * be non-null.
+     * 
+     * The type of database is determined from the {@code jdbcDriverClassName}
+     * so that the appropriate {@code SQLGenerator} can be instantiated. 
+     * The recognized and supported databases are those in {@link JDBCDatabase}.
+     *
+     * The table name must be a simple name with no catalog or schema
+     * information. If those are needed, use
+     * {@link #TableQuery(String, String, String, JDBCConnectionPool, String)}.
+     *
+     * @param tableName
+     *            Name of the database table to connect to
+     * @param connectionPool
+     *            Connection pool for accessing the database
+     * @param jdbcDriverClassName
+     *            JDBC Driver class name. This is used to determine the type
+     *            of database and therefore which type of  {@code SQLGenerator}
+     *            to use. If this parameter is {@code null} then the default
+     *            SQLGenerator will be used.
+     */
+    public TableQuery(String tableName, JDBCConnectionPool connectionPool,
+            String jdbcDriverClassName) {
+        this(null, null, tableName, connectionPool, 
+                getSQLGeneratorFromDriverClass(jdbcDriverClassName));
+    }
+    
+    /**
      * Creates a new TableQuery using the given connection pool, SQL generator
      * and table name to fetch the data from. Catalog and schema names can be
      * null, all other parameters must be non-null.
@@ -129,9 +163,41 @@ public class TableQuery extends AbstractTransactionalQuery
     }
 
     /**
+     * Creates a new TableQuery using the given connection pool, JDBC Driver
+     * class name and table name to fetch the data from. Catalog and schema 
+     * names can be null, all other parameters must be non-null.
+     *
+     * The type of database is determined from the {@code jdbcDriverClassName}
+     * so that the appropriate {@code SQLGenerator} can be instantiated. 
+     * The recognized and supported databases are those in {@link JDBCDatabase}.
+     * 
+     * @param catalogName
+     *            Name of the database catalog (can be null)
+     * @param schemaName
+     *            Name of the database schema (can be null)
+     * @param tableName
+     *            Name of the database table to connect to
+     * @param connectionPool
+     *            Connection pool for accessing the database
+     * @param jdbcDriverClassName
+     *            JDBC Driver class name. This is used to determine the type
+     *            of database and therefore which type of  {@code SQLGenerator}
+     *            to use. If this parameter is {@code null} then the default
+     *            SQLGenerator will be used.
+     */
+    public TableQuery(String catalogName, String schemaName, String tableName,
+            JDBCConnectionPool connectionPool, String jdbcDriverClassName) {
+        this(catalogName, schemaName, tableName, connectionPool, getSQLGeneratorFromDriverClass(jdbcDriverClassName),
+                true);
+    }
+    
+    /**
      * Creates a new TableQuery using the given connection pool and table name
      * to fetch the data from. All parameters must be non-null. The default SQL
-     * generator will be used for queries.
+     * generator will be used for queries. Note that this will <i>not</i> work
+     * for Oracle and Microsoft SQL Server and possibly others. In general it 
+     * is safer to use one of the constructors that either accept an explicit
+     * {@code SQLGenerator} or which accept a JDBC Driver class name.
      *
      * The table name must be a simple name with no catalog or schema
      * information. If those are needed, use
@@ -147,6 +213,45 @@ public class TableQuery extends AbstractTransactionalQuery
         this(tableName, connectionPool, new DefaultSQLGenerator());
     }
 
+    /**
+     * Creates a new TableQuery using the given connection pool, JDBC Driver
+     * class name and table name to fetch the data from. JDBC Driver class name,
+     * catalog and schema names can be null, all other parameters must be
+     * non-null.
+     *
+     * The type of database is determined from the {@code jdbcDriverClassName}
+     * so that the appropriate {@code SQLGenerator} can be instantiated. 
+     * The recognized and supported databases are those in {@link JDBCDatabase}.
+     * 
+     * @param catalogName
+     *            Name of the database catalog (can be null)
+     * @param schemaName
+     *            Name of the database schema (can be null)
+     * @param tableName
+     *            Name of the database table to connect to
+     * @param connectionPool
+     *            Connection pool for accessing the database
+     * @param jdbcDriverClassName
+     *            JDBC Driver class name. This is used to determine the type
+     *            of database and therefore which type of  {@code SQLGenerator}
+     *            to use. If this parameter is {@code null} then the default
+     *            SQLGenerator will be used.
+     * @param escapeNames
+     *            true to escape special characters in catalog, schema and table
+     *            names, false to use the names as-is
+     * @since 7.1
+     */
+    protected TableQuery(String catalogName, String schemaName,
+            String tableName, JDBCConnectionPool connectionPool,
+            String jdbcDriverClassName, boolean escapeNames) {
+        this(   catalogName, 
+                schemaName, 
+                tableName, 
+                connectionPool, 
+                getSQLGeneratorFromDriverClass(jdbcDriverClassName), 
+                escapeNames);
+    }
+    
     /**
      * Creates a new TableQuery using the given connection pool, SQL generator
      * and table name to fetch the data from. Catalog and schema names can be
@@ -189,6 +294,35 @@ public class TableQuery extends AbstractTransactionalQuery
         fetchMetaData();
     }
 
+    private static SQLGenerator getSQLGeneratorFromDriverClass(String jdbcDriverClassName) {
+        if (jdbcDriverClassName == null) {
+            return new DefaultSQLGenerator();
+        }
+        JDBCDatabase db = JDBCDatabase.getFromDriverClassName(jdbcDriverClassName);
+        if (db == null) {
+            // Type of database not supported.
+            LOGGER.log(Level.WARNING, 
+                    "Type of database cannot be determined from JDBC Driver class name : {0}" +
+                    ", possibly because SQLContainer doesn't have explicit support for this " +
+                    "database. A sensible default rule will be used when creating queries. " +
+                    "This may or may not work.", jdbcDriverClassName);
+            return new DefaultSQLGenerator();
+        }
+        if (db == JDBCDatabase.MARIADB || db == JDBCDatabase.MYSQL || db == JDBCDatabase.POSTGRESQL) {
+            return new DefaultSQLGenerator();
+        }
+        if (db == JDBCDatabase.ORACLE) {
+            return new OracleGenerator();
+        }
+        if (db == JDBCDatabase.MSSQL) {
+            return new MSSQLGenerator();
+        }
+        if (db == JDBCDatabase.DERBY) {
+            return new DerbySQLGenerator();
+        }
+        return new DefaultSQLGenerator();
+    }
+    
     /*
      * (non-Javadoc)
      *
