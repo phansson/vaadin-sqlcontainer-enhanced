@@ -13,7 +13,6 @@
  */
 package org.vaadin.enhancements.sqlcontainer.query.generator;
 
-import com.vaadin.data.util.sqlcontainer.query.generator.DefaultSQLGenerator;
 
 /**
  * Generates SQL that is supported by Apache Derby DB.
