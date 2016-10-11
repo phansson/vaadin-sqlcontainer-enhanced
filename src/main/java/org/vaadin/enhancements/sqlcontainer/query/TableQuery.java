@@ -85,7 +85,7 @@ public class TableQuery extends AbstractTransactionalQuery
     private LinkedList<RowIdChangeListener> rowIdChangeListeners;
     /** Row ID change events, stored until commit() is called */
     private final List<RowIdChangeEvent> bufferedEvents = new ArrayList<RowIdChangeEvent>();
-
+    
     /** Set to true to output generated SQL Queries to System.out */
     private final boolean debug = false;
 
