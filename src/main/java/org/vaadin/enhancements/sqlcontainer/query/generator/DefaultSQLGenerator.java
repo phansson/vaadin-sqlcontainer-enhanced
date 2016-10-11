@@ -46,7 +46,7 @@ public class DefaultSQLGenerator implements SQLGenerator {
      * Create a new DefaultSqlGenerator instance that uses the given
      * implementation of {@link StatementHelper}
      *
-     * @param statementHelper
+     * @param statementHelperClazz
      */
     public DefaultSQLGenerator(
             Class<? extends StatementHelper> statementHelperClazz) {
@@ -373,7 +373,7 @@ public class DefaultSQLGenerator implements SQLGenerator {
      * Returns the statement helper for the generator. Override this to handle
      * platform specific data types.
      *
-     * @see http://dev.vaadin.com/ticket/9148
+     * @see <a href="http://dev.vaadin.com/ticket/9148">ticket 9148</a>
      * @return a new instance of the statement helper
      */
     protected StatementHelper getStatementHelper() {

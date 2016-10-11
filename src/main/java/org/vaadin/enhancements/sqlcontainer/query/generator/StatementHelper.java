@@ -165,11 +165,11 @@ public class StatementHelper implements Serializable {
      *
      * @param i
      * @param pstmt
-     * @param dataTypes2
+     * @param dataTypes
      *
      * @return true if handled, false otherwise
      *
-     * @see {@link http://dev.vaadin.com/ticket/9148}
+     * @see <a href="http://dev.vaadin.com/ticket/9148">ticket 9148</a>
      */
     protected boolean handleUnrecognizedTypeNullValue(int i,
             PreparedStatement pstmt, Map<Integer, Class<?>> dataTypes)
