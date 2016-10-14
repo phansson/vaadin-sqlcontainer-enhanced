@@ -49,6 +49,22 @@ import org.vaadin.enhancements.sqlcontainer.query.generator.OracleGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.SQLGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.StatementHelper;
 
+
+
+/**
+ * A query delegate on top of a TABLE or a VIEW.
+ * 
+ * <p>SQL statements will be auto-generated behind the scenes in order to
+ * perform the required actions (view, add, remove, update) on the table.
+ * 
+ * <p>You can help TableQuery by letting it know which type of database
+ * it is working with. This way TableQuery will know exactly how to build
+ * SQL queries against the database rather than making assumptions. 
+ * TableQuery can figure out what the database is if you pass it the
+ * JDBC Driver's class name, e.g. {@code oracle.jdbc.driver.OracleDriver}
+ * for Oracle. You can see which databases are supported and their driver
+ * class names {@link org.vaadin.enhancements.sqlcontainer.JDBCDriverClassNames here}.
+ */
 @SuppressWarnings("serial")
 public class TableQuery extends AbstractTransactionalQuery
         implements QueryDelegate, QueryDelegate.RowIdChangeNotifier {
@@ -239,7 +255,6 @@ public class TableQuery extends AbstractTransactionalQuery
      * @param escapeNames
      *            true to escape special characters in catalog, schema and table
      *            names, false to use the names as-is
-     * @since 7.1
      */
     protected TableQuery(String catalogName, String schemaName,
             String tableName, JDBCConnectionPool connectionPool,
