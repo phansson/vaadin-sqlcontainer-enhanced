@@ -46,6 +46,10 @@ import org.vaadin.enhancements.sqlcontainer.query.TableQuery;
 import org.vaadin.enhancements.sqlcontainer.query.generator.MSSQLGenerator;
 import org.vaadin.enhancements.sqlcontainer.query.generator.OracleGenerator;
 
+/**
+ * Enhanced version of Vaadin SQLContainer which supports type conversion
+ * for proprietary types returned from the JDBC query.
+ */
 public class SQLContainer implements Container, Container.Filterable,
         Container.Indexed, Container.Sortable, Container.ItemSetChangeNotifier {
 
@@ -136,14 +140,14 @@ public class SQLContainer implements Container, Container.Filterable,
     }
     
     /**
-     * Creates and initializes SQLContainer using the given QueryDelegate
-     * and map of classes to do custom conversion on. You rarely need this form
-     * of the constructor unless you need to perform conversion on some vendor
+     * Creates and initializes SQLContainer using the given QueryDelegate and
+     * map of classes to do custom conversion on. This form of the constructor
+     * is rarely needed unless you need to perform conversion on some vendor
      * specific data types, e.g. Oracle's proprietary timestamp values.
      *
      * @param delegate
      *            QueryDelegate implementation (must not be {@code null})
-     * @param customTypeConverters map of converters
+     * @param customTypeConverters map of converters (may be {@code null})
      * @throws SQLException
      */
     public SQLContainer(QueryDelegate delegate, Map<Class<?>, CustomTypeConverter> customTypeConverters) throws SQLException {
