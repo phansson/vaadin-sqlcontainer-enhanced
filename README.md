@@ -42,7 +42,7 @@ Map<Class<?>,CustomTypeConverter> typeConverters = Collections.singletonMap(
     oracle.sql.TIMESTAMPTZ.class,
     new CustomTypeConverter<oracle.sql.TIMESTAMPTZ, Date>() {
         @Override
-        public Date convertObject(TIMESTAMPTZ from, ResultSet rs) {
+        public Date convertObject(oracle.sql.TIMESTAMPTZ from, ResultSet rs) {
             try {
                 return from.dateValue(rs.getStatement().getConnection());
             } catch (SQLException ex) {
@@ -59,7 +59,7 @@ Map<Class<?>,CustomTypeConverter> typeConverters = Collections.singletonMap(
 
 
 SQLContainer myContainer = new SQLContainer(query, typeConverters);
-```java
+```
 
 
 ## Auto-detect database type
