@@ -85,7 +85,7 @@ String driverClass = "oracle.jdbc.driver.OracleDriver";
 
 // Pass it to the TableQuery
 TableQuery myQuery = new TableQuery("ORDERS", myPool, driverClass);
-```java
+```
 
 
 
