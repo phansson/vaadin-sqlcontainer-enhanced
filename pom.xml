@@ -8,14 +8,16 @@
     <organization>
         <name>Vaadin Community</name>
     </organization>
+    <url>https://github.com/phansson/vaadin-sqlcontainer-enhanced</url>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyyMMdd-HHmmss Z</maven.build.timestamp.format>
         <vaadin.version>7.7.3</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>
-        <!-- Must not change this because of the Directory -->
+        <!-- The name of the Add-on cannot start with 'Vaadin', so cannot derive from ${project.name} -->
         <Implementation-Title>SQLContainer Enhanced</Implementation-Title>
         <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
         <Vaadin-License-Title>Apache License 2.0</Vaadin-License-Title>
@@ -65,6 +67,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Bundle-Name>${Implementation-Title}</Bundle-Name>
                         <Export-Package>org.vaadin.enhancements.sqlcontainer.*</Export-Package>
                     </instructions>
                 </configuration>
@@ -87,7 +90,7 @@
                         <index>true</index>
                         <manifest>
                             <addClasspath>true</addClasspath>                            
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
                             <!-- Add some useful properties that we can pick
@@ -96,6 +99,12 @@
                             <Project-Version>${project.version}</Project-Version>
                             <Build-Date>${maven.build.timestamp}</Build-Date>
                             <Build-Date-Format>${maven.build.timestamp.format}</Build-Date-Format>
+                            
+                            <Implementation-Title>${Implementation-Title}</Implementation-Title>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            <Implementation-URL>${project.url}</Implementation-URL>
                             
                             <!-- Package format version - do not change -->
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
