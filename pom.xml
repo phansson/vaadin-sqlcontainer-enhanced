@@ -126,6 +126,12 @@
         </plugins>
     </build>
  
+    <scm> 
+        <connection>scm:hg:https://github.com/phansson/vaadin-sqlcontainer-enhanced</connection> 
+        <developerConnection>scm:hg:https://github.com/phansson/vaadin-sqlcontainer-enhanced</developerConnection> 
+        <url>https://github.com/phansson/vaadin-sqlcontainer-enhanced</url> 
+    </scm>
+    
     <profiles>
         <profile>
             <id>directorypackage</id>
