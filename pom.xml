@@ -86,7 +86,10 @@
                     <archive>
                         <index>true</index>
                         <manifest>
-                            <addClasspath>true</addClasspath>
+                            <addClasspath>true</addClasspath>                            
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
                             <!-- Add some useful properties that we can pick
                                  up programmatically 
                             -->
@@ -94,9 +97,6 @@
                             <Build-Date>${maven.build.timestamp}</Build-Date>
                             <Build-Date-Format>${maven.build.timestamp.format}</Build-Date-Format>
                             
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
                             <!-- Package format version - do not change -->
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
                             <Vaadin-License-Title>${Vaadin-License-Title}</Vaadin-License-Title>
