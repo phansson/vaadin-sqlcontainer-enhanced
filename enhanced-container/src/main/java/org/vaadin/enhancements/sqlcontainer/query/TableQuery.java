@@ -152,7 +152,7 @@ public class TableQuery extends AbstractTransactionalQuery
     public TableQuery(String tableName, JDBCConnectionPool connectionPool,
             String jdbcDriverClassName) {
         this(null, null, tableName, connectionPool, 
-                getSQLGeneratorFromDriverClass(jdbcDriverClassName));
+                SQLUtil.getSQLGeneratorFromDriverClassNoExc(jdbcDriverClassName));
     }
     
     /**
@@ -203,7 +203,8 @@ public class TableQuery extends AbstractTransactionalQuery
      */
     public TableQuery(String catalogName, String schemaName, String tableName,
             JDBCConnectionPool connectionPool, String jdbcDriverClassName) {
-        this(catalogName, schemaName, tableName, connectionPool, getSQLGeneratorFromDriverClass(jdbcDriverClassName),
+        this(catalogName, schemaName, tableName, connectionPool, 
+                SQLUtil.getSQLGeneratorFromDriverClassNoExc(jdbcDriverClassName),
                 true);
     }
     
@@ -263,7 +264,7 @@ public class TableQuery extends AbstractTransactionalQuery
                 schemaName, 
                 tableName, 
                 connectionPool, 
-                getSQLGeneratorFromDriverClass(jdbcDriverClassName), 
+                SQLUtil.getSQLGeneratorFromDriverClassNoExc(jdbcDriverClassName), 
                 escapeNames);
     }
     
@@ -309,37 +310,6 @@ public class TableQuery extends AbstractTransactionalQuery
         fetchMetaData();
     }
 
-    private static SQLGenerator getSQLGeneratorFromDriverClass(String jdbcDriverClassName) {
-        if (jdbcDriverClassName == null) {
-            return new DefaultSQLGenerator();
-        }
-        JDBCDatabase db = JDBCDatabase.getFromDriverClassName(jdbcDriverClassName);
-        if (db == null) {
-            // Type of database not supported.
-            LOGGER.log(Level.WARNING, 
-                    "Type of database cannot be determined from JDBC Driver class name : {0}" +
-                    ", possibly because SQLContainer doesn't have explicit support for this " +
-                    "database. A sensible default rule will be used when creating queries. " +
-                    "This may or may not work.", jdbcDriverClassName);
-            return new DefaultSQLGenerator();
-        }
-        if (db == JDBCDatabase.MARIADB || 
-                db == JDBCDatabase.MYSQL || 
-                db == JDBCDatabase.POSTGRESQL ||
-                db == JDBCDatabase.HSQLDB) {
-            return new DefaultSQLGenerator();
-        }
-        if (db == JDBCDatabase.ORACLE) {
-            return new OracleGenerator();
-        }
-        if (db == JDBCDatabase.MSSQL) {
-            return new MSSQLGenerator();
-        }
-        if (db == JDBCDatabase.DERBY) {
-            return new DerbySQLGenerator();
-        }
-        return new DefaultSQLGenerator();
-    }
     
     /*
      * (non-Javadoc)

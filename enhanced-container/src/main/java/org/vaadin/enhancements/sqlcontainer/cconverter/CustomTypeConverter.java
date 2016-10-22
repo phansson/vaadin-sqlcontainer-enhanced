@@ -11,7 +11,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.vaadin.enhancements.sqlcontainer;
+package org.vaadin.enhancements.sqlcontainer.cconverter;
 
 import java.sql.ResultSet;
 
@@ -26,17 +26,23 @@ import java.sql.ResultSet;
  * is that this converter acts <i>inside</i> the JDBC ResultSet traversal. Therefore
  * it has access to the ResultSet. For example this is strictly necessary in
  * order to convert Oracle's proprietary timestamp types.
+ * Vaadin standard property converter
+ * converts from model to presentation (and vice versa), while this converter
+ * converts from native database type into model. The Vaadin standard property
+ * converter may therefore still be used in addition to this converter.
+ * 
  * 
  * <p>Note that unlike Vaadin standard property converter
- * this is a one-way converter:  it only converts in the direction 
- * <i>from</i> the value returned by the JDBC driver into something else.
+ * this converter is a one-way converter:  it only converts in the direction 
+ * <i>from</i> the value returned by the JDBC driver into something else. 
+ * 
  * 
  * <p>The converter is applied to all columns of a query except those that
  * are part of a primary key.
  * 
  * @param <FROM> type to convert from, e.g. {@code oracle.sql.TIMESTAMPTZ}
  * @param <TO> type to convert to, e.g. {@code java.util.Date}
- * @see SQLContainer#SQLContainer(org.vaadin.enhancements.sqlcontainer.query.QueryDelegate, java.util.Map) 
+ * @see org.vaadin.enhancements.sqlcontainer.SQLContainer#SQLContainer(org.vaadin.enhancements.sqlcontainer.query.QueryDelegate, java.util.Map) 
  */
 public interface CustomTypeConverter<FROM,TO> {
 

@@ -15,6 +15,7 @@
  */
 package org.vaadin.enhancements.sqlcontainer;
 
+import org.vaadin.enhancements.sqlcontainer.cconverter.CustomTypeConverter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
