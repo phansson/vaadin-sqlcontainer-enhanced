@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.vaadin.community.addon</groupId>
         <artifactId>enhanced-sqlcontainer-parent</artifactId>
-        <version>0.9.9-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>sqlcontainer-enhanced</artifactId>
     <name>Vaadin SQLContainer Enhanced</name>
