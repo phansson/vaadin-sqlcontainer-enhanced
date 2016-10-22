@@ -33,18 +33,18 @@ to the ResultSet. It's a very advanced feature and most of the time you would
 want to use Vaadin standard converter instead.
      
 Here's an example that will convert from Oracle's properietary `TIMESTAMPTZ`
-value into plain-vanilla `Date`. Incidentially, by doing so, we'll loose the 
+value into plain-vanilla `Timestamp`. Incidentially, by doing so, we'll loose the 
 nano-second precision on the timestamp but that's a choice we make, as we do not want
 to expose Oracle's proprietary type to the rest of our application.
 
 ```java
 Map<Class<?>,CustomTypeConverter> typeConverters = Collections.singletonMap(
     oracle.sql.TIMESTAMPTZ.class,
-    new CustomTypeConverter<oracle.sql.TIMESTAMPTZ, Date>() {
+    new CustomTypeConverter<oracle.sql.TIMESTAMPTZ, java.sql.Timestamp>() {
         @Override
-        public Date convertObject(oracle.sql.TIMESTAMPTZ from, ResultSet rs) {
+        public java.sql.Timestamp convertObject(oracle.sql.TIMESTAMPTZ from, ResultSet rs) {
             try {
-                return from.dateValue(rs.getStatement().getConnection());
+                return from.timestampValue(rs.getStatement().getConnection());
             } catch (SQLException ex) {
                 LOGGER.log(Level.WARNING, "Cannot convert " + getType().getName(), ex);
             }
@@ -52,11 +52,10 @@ Map<Class<?>,CustomTypeConverter> typeConverters = Collections.singletonMap(
         }
 
         @Override
-        public Class<Date> getType() {
-            return Date.class;
+        public Class<java.sql.Timestamp> getType() {
+            return java.sql.Timestamp.class;
         }
     });
-
 
 SQLContainer myContainer = new SQLContainer(query, typeConverters);
 ```
