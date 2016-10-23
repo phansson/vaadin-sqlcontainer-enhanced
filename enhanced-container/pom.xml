@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.community.addon</groupId>
     <artifactId>sqlcontainer-enhanced</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>Vaadin SQLContainer Enhanced</name>
     <packaging>bundle</packaging>
     
