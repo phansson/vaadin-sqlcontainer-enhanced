@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.vaadin.community.addon</groupId>
         <artifactId>enhanced-sqlcontainer-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>oracle-jdbc-shadow</artifactId>
